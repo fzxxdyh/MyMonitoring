@@ -1,0 +1,157 @@
+{% extends 'monitor/index.html' %}
+{% load mytags %}
+
+
+              {% block right %}
+                   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+                       <h2 class="sub-header">rule [ 连续{{ rule.counts }}次 {{ rule.keyname }} {{ rule.get_symbol_display }}  {{ rule.keyvalue }} ] 绑定的主机</h2>
+
+
+
+
+
+
+
+
+
+
+
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <td>序号</td>
+                              <th>主机</th>
+                              <th>状态</th>
+
+                            </tr>
+                          </thead>
+
+                          <tbody>
+
+
+                                  {% display_rule_has_host query_sets rule %}
+
+
+
+
+                            <!--
+                            <tr>
+                              <td>1,001</td>
+                              <td>Lorem</td>
+                              <td>ipsum</td>
+
+                            </tr>
+                            <tr>
+                              <td>1,002</td>
+                              <td>amet</td>
+                              <td>consectetur</td>
+
+                            </tr>
+                            <tr>
+                              <td>1,003</td>
+                              <td>Integer</td>
+                              <td>nec</td>
+
+                            </tr>
+                            -->
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <nav>
+                          <ul class="pagination">
+                              {% if query_sets.has_previous %}
+                                    <li class=""><a href="?_page={{ query_sets.previous_page_number }}">上页</a></li>
+                              {% endif %}
+                              {% build_paginators query_sets %}
+                              {% if query_sets.has_next %}
+                                    <li class=""><a href="?_page={{ query_sets.next_page_number }}">下页</a></li>
+                              {% endif %}
+                          </ul>
+                      </nav>
+                   </div>
+
+
+
+ <script>
+ function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+
+    //('在ajaxSetup中');
+	var csrftoken = getCookie('csrftoken');
+	//alert(csrftoken);
+	if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+function update_data() {
+    // 即使使用ajax，执行完后会跳转到a标签的href地址
+    var pathname = window.location.pathname; //url, 等于request.path，类似 /jenkins/id/
+    // console.log(pathname);
+    var xhr = new XMLHttpRequest();
+    xhr.open('post', pathname, false); // true表示异步（默认），false表示同步（不推荐）)
+    var csrftoken = getCookie('csrftoken');
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+    //下面这两个监听事件写在send前面比较保险，写在后面可能等文件发送完成了才会执行
+    // 事件1：监听服务端返回码
+    /*
+    xhr.onreadystatechange=function (){
+        tbody_obj = document.getElementById('testabc');
+        if(xhr.readyState==4 && xhr.status==200) {   //服务器返回200，执行下面代码
+            tbody_obj.innerHTML = JSON.parse(xhr.responseText);
+            alert('服务端正常返回了');
+            }
+        else{
+            tbody_obj.innerHTML = "数据刷新中...";
+            alert('服务端还没正常返回');
+        }
+
+    };
+    */
+
+    /*
+    // 事件2：监听文件上传进度
+    xhr.upload.onprogress = function (ev) {
+        if (ev.lengthComputable){
+            var count = Math.round(100*ev.loaded/ev.total); //四舍五入
+            var msg = ">";
+            msg = "进度: "  + msg.repeat(count)  + String(count) + "% "  ;
+            document.getElementById("upload_info").innerHTML=msg;
+            document.getElementById("upload_result").innerHTML="文件上传中, 请稍等...";
+        }
+    {;
+    */
+    xhr.send(null);
+
+}
+
+</script>
+
+              {% endblock %}
+

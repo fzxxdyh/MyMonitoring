@@ -1,0 +1,13 @@
+2019-01-11 14:48:32.644400 get_userkey starting
+2019-01-11 14:48:32.644400 del_history_data starting
+2019-01-11 14:48:32.646400 get_hostperformance starting
+get_hostbase,删除了多少行: 1 delete from monitor_hostbase where ip='10.10.10.1'
+2019-01-11 14:48:32.658400 get_hostbase starting
+monitorServer starting!
+2019-01-11 14:48:42.637400 check_host_rules starting
+main end
+check_host_alived starting
+主机状态：3、响应---》响应 10.10.10.1 
+更新host表
+check_host_alived starting
+更新host表

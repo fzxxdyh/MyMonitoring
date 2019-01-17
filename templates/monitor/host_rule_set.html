@@ -1,0 +1,288 @@
+{% extends 'monitor/index.html' %}
+{% load mytags %}
+
+
+              {% block right %}
+                   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+                           <div style="float: left;margin-left: 200px;">
+                               <h2 class="sub-header" style="margin-left:200px;">主机规则配置</h2>
+
+
+                                <div style="border: 2px solid;width: 300px;height:500px;float: left;overflow-y: scroll">
+                                    <table>
+                                        <tr>
+                                            <td><input type="checkbox" name="host_select" onclick="check_select(this)">全选</td>
+
+                                        </tr>
+
+                                        {% host_choices host_query_sets %}
+
+                                    </table>
+
+
+
+                                </div>
+
+                                <div style="float: left">
+                                    <img src="/static/img/shuangxiang.jpg" style="width:100px;height: 50px;margin-top: 200px;">
+                                </div>
+
+                                <div style="border: 2px solid; height:500px;float: left;overflow-y: scroll">
+                                    <table>
+                                        <tr>
+                                            <td><input type="checkbox" name="rule_select" onclick="check_select(this)">全选</td>
+
+                                        </tr>
+
+                                        {% rule_choices rule_query_sets %}
+
+                                    </table>
+                                </div>
+
+
+                                    <table id="table_invaild_set" style="float: left;margin-left: 50px;color: red;">
+                                            <!--此处显示配置无效信息-->
+                                    </table>
+
+
+
+
+
+                                <div style="clear: both;margin-top: 50px;margin-left:70px;float: left">
+                                    <a type="button" class="btn btn-info"  href="{% url 'host_rule_set' %}" onclick="clear_host_rule()">清空选中主机规则</a>
+
+                                    <!--方法1、使用ajax提交 -->
+                                    <a style="margin-left: 250px;" type="button" class="btn btn-info"  href="javascript:void(0);" onclick="set_host_rule()">保存选中主机规则</a>
+
+
+                                    <!--方法2、使用form提交
+                                    <form method="post" style="margin-left: 250px;display: inline">
+                                        {% csrf_token %}
+                                        <input type="submit"   class="btn btn-info" value="保存选中主机规则">
+                                    </form>
+                                    -->
+
+
+
+
+                                </div>
+
+
+
+                           </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div>
+
+
+
+ <script>
+ function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+
+    //('在ajaxSetup中');
+	var csrftoken = getCookie('csrftoken');
+	//alert(csrftoken);
+	if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+ function check_select(self) {
+    if (self.name === "host_select"){ //主机全选按钮
+        //alert("host_select");
+        inps = document.getElementsByClassName("input_host");
+    }
+    else{//规则全选按钮
+        //alert("rule_select");
+        inps = document.getElementsByClassName("input_rule");
+    }
+    if (self.checked === true){
+        //alert("checked");
+        flag = true;
+    }
+    else {
+        //alert("not checked");
+        flag = false;
+    }
+    for (var i=0, len=inps.length; i<len; i++){
+        inps[i].checked = flag;
+    }
+
+ }
+
+function set_host_rule() {
+    // 即使使用ajax，执行完后会跳转到a标签的href地址
+    var pathname = window.location.pathname; //url, 等于request.path，类似 /jenkins/id/
+    // console.log(pathname);
+    var xhr = new XMLHttpRequest();
+    xhr.open('post', pathname, false); // true表示异步（默认），false表示同步（不推荐）)
+    var csrftoken = getCookie('csrftoken');
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+    //下面这两个监听事件写在send前面比较保险，写在后面可能等文件发送完成了才会执行
+    // 事件1：监听服务端返回码
+
+    xhr.onreadystatechange=function (){
+        obj = document.getElementById('table_invaild_set');
+        if(xhr.readyState==4 && xhr.status==200) {   //服务器返回200，执行下面代码
+            res = JSON.parse(xhr.responseText);
+            //console.log(res);
+            var text = '';
+            for (var ip in res){
+                for (var i in res[ip]['invalid_rule']){
+                    text = '<tr><td>以下配置无效</td></tr>'; //说明有无效的rule配置
+                }
+            }
+
+            for (var ip in res){
+                // 右边的无效信息
+                for (var i=0, len=res[ip]['invalid_rule'].length; i<len; i++){
+                    text =  text + '<tr><td>'  + ip + '-->' + res[ip]['invalid_rule'][i] +  '</td></tr>';
+                }
+                // 左边主机旁边的规则数
+                var obj_a = document.getElementById(res[ip]['aid']);
+                obj_a.innerText = res[ip]['rules'];
+
+            }
+            //console.log(text);
+            obj.innerHTML = text;
+            }
+        else{
+            obj.innerHTML = "数据刷新中...";
+            alert('服务端还没正常返回');
+        }
+
+    };
+
+
+    /*
+    // 事件2：监听文件上传进度
+    xhr.upload.onprogress = function (ev) {
+        if (ev.lengthComputable){
+            var count = Math.round(100*ev.loaded/ev.total); //四舍五入
+            var msg = ">";
+            msg = "进度: "  + msg.repeat(count)  + String(count) + "% "  ;
+            document.getElementById("upload_info").innerHTML=msg;
+            document.getElementById("upload_result").innerHTML="文件上传中, 请稍等...";
+        }
+    {;
+    */
+
+
+    var formData = new FormData();
+
+    var host_ids = [];
+    obj = document.getElementsByClassName("input_host");
+    //  for (k in obj) 循环的次数多于obj.length, 不要用这种方式
+    for (var i=0, len=obj.length; i<len; i++){//推荐用这种方式
+        if (obj[i].checked)
+            host_ids.push(obj[i].value);
+    }
+
+    var rule_ids = [];
+    obj = document.getElementsByClassName("input_rule");
+    for (var i=0, len=obj.length; i<len; i++){
+        if (obj[i].checked)
+            rule_ids.push(obj[i].value)
+    }
+    formData.append('host_ids', host_ids);
+    formData.append('rule_ids', rule_ids);
+    formData.append('action_type', "set"); //设置
+    //alert(host_ids);
+    //alert(rule_ids);
+    xhr.send(formData);
+
+}
+
+
+function clear_host_rule() {
+    // 即使使用ajax，执行完后会跳转到a标签的href地址
+    var pathname = window.location.pathname; //url, 等于request.path，类似 /jenkins/id/
+    // console.log(pathname);
+    var xhr = new XMLHttpRequest();
+    xhr.open('post', pathname, false); // true表示异步（默认），false表示同步（不推荐）)
+    var csrftoken = getCookie('csrftoken');
+    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+
+    //下面这两个监听事件写在send前面比较保险，写在后面可能等文件发送完成了才会执行
+    // 事件1：监听服务端返回码
+    /*
+    xhr.onreadystatechange=function (){
+        tbody_obj = document.getElementById('testabc');
+        if(xhr.readyState==4 && xhr.status==200) {   //服务器返回200，执行下面代码
+            tbody_obj.innerHTML = JSON.parse(xhr.responseText);
+            alert('服务端正常返回了');
+            }
+        else{
+            tbody_obj.innerHTML = "数据刷新中...";
+            alert('服务端还没正常返回');
+        }
+
+    };
+    */
+
+    /*
+    // 事件2：监听文件上传进度
+    xhr.upload.onprogress = function (ev) {
+        if (ev.lengthComputable){
+            var count = Math.round(100*ev.loaded/ev.total); //四舍五入
+            var msg = ">";
+            msg = "进度: "  + msg.repeat(count)  + String(count) + "% "  ;
+            document.getElementById("upload_info").innerHTML=msg;
+            document.getElementById("upload_result").innerHTML="文件上传中, 请稍等...";
+        }
+    {;
+    */
+
+
+    var formData = new FormData();
+    var host_ids = [];
+    obj = document.getElementsByClassName("input_host");
+    for (var i=0, len=obj.length; i<len; i++){
+        if (obj[i].checked)
+            host_ids.push(obj[i].value);
+    }
+    formData.append('host_ids', host_ids)
+    formData.append('action_type', "clear") //清空
+    xhr.send(formData);
+
+}
+
+</script>
+
+              {% endblock %}
+

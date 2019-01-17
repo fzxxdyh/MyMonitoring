@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<br><br><br>
+
+<div class="panel panel-default" style="width:70%;margin:auto;">
+  <div class="panel-heading" style="background-color: #428bca;text-align: center;margin:auto;height: 50px;">
+    <h3 class="panel-title" style="line-height: 30px;font-size: 25px;">模板修改</h3>
+  </div>
+  <div class="panel-body" style=" width:70%;text-align: center;margin-left: 100px;font-size: 18px;">
+      <form method="post" action="{% url 'monitortemplate' %}">
+          {% csrf_token %}
+          <label style="width:200px;">模板名称<span style="color: red">*</span></label><input name="host_ip" style="width: 600px;height: 50px;" required="required" placeholder="多个Ip用 , 号分隔">
+          <br/><br/>
+          <label style="width:200px;">ssh端口<span style="color: red">*</span></label><input name="ssh_port" required="required" style="width: 600px;height: 50px;" value="22">
+          <br/><br/>
+          <label style="width:200px;">用户名<span style="color: red">*</span></label><input name="username" required="required" style="width: 600px;height: 50px;">
+          <br/><br/>
+          <label style="width:200px;">密码<span style="color: red">*</span></label><input name="passwd" required="required" type="password" style="width: 600px;height: 50px;">
+          <br/><br/>
+          <button type="submit" style="margin-left:200px;height: 50px;width:60px;background-color: #c4e3f3">提交</button>
+      </form>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'monitor/index.html' %}
+{% load mytags %}
+
+
+              {% block right %}
+                   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+                       <h2 class="sub-header">脚本主机</h2>
+
+
+                        <a href="{% url 'addhost' %}"><img src="/static/img/add.png" style="width: 30px;height: 30px;"></a>
+                        <br/><br/>
+
+
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>序号</th>
+                              <th>ip</th>
+                              <th>端口</th>
+                              <th>用户</th>
+                              <th>密码</th>
+                              <th>私钥</th>
+                              <th>删除</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+
+
+                                  {% display_script_hostinfo query_sets %}
+
+
+
+
+                            <!--
+                            <tr>
+                              <td>1,001</td>
+                              <td>Lorem</td>
+                              <td>ipsum</td>
+
+                            </tr>
+                            <tr>
+                              <td>1,002</td>
+                              <td>amet</td>
+                              <td>consectetur</td>
+
+                            </tr>
+                            <tr>
+                              <td>1,003</td>
+                              <td>Integer</td>
+                              <td>nec</td>
+
+                            </tr>
+                            -->
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <nav>
+                          <ul class="pagination">
+                              {% if query_sets.has_previous %}
+                                    <li class=""><a href="?_page={{ query_sets.previous_page_number }}">上页</a></li>
+                              {% endif %}
+                              {% build_paginators query_sets %}
+                              {% if query_sets.has_next %}
+                                    <li class=""><a href="?_page={{ query_sets.next_page_number }}">下页</a></li>
+                              {% endif %}
+                          </ul>
+                      </nav>
+                   </div>
+
+
+
+
+              {% endblock %}
+

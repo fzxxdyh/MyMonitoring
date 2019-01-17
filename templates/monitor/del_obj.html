@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div style="margin-left: 300px;">
+    <br/><br/><br/>
+
+    <h3>确认删除记录 {{ instance_obj }} ?</h3>
+    <br/><br/><br/>
+   <form method="post">{% csrf_token %}
+        <input type="submit" class="btn btn-danger" value="确认">
+
+        <a style="margin-left: 50px;" class="btn btn-info" href="{% url 'select_model' model_name %}">取消</a>
+    </form>
+</div>
+
+
+{% endblock %}

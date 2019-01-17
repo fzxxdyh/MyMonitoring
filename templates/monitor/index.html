@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!--
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://v3.bootcss.com/examples/dashboard/#">Project name</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Dashboard</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Settings</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Profile</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+    -->
+
+    <div class="container-fluid">
+      <div class="row">
+              {% block left %}
+                    <div class="col-sm-3 col-md-2 sidebar">
+                      <ul class="nav nav-sidebar">
+                        <li class="active"><a href="{% url 'hostlist' %}">主页 <span class="sr-only">(current)</span></a></li>
+                        <li><a href="javascript:void(0);" onclick="display_menu(this)">主机管理</a>
+                             <ul style="list-style: none;">
+                                 <li><a href="{% url 'hostlist' %}">主机列表</a></li>
+                                 <li><a href="{% url 'hostbase' %}">主机配置</a></li>
+                                 <li><a href="{% url 'hostperformance' %}">主机性能</a></li>
+                                 <li><a href="{% url 'userkey' %}">用户key</a></li>
+
+                             </ul>
+                        </li>
+
+                        <li><a href="javascript:void(0);" onclick="display_menu(this)">监控中心</a>
+                             <ul style="list-style: none; ">
+                                 <li><a href="{% url 'hosthistory' %}">事件历史</a></li>
+                                 <li><a href="{% url 'mailhistory' %}">邮件历史</a></li>
+                                 <li><a href="{% url 'rule_list' %}">告警规则</a></li>
+                                 <li><a href="{% url 'host_rule_set' %}">主机告警配置</a></li>
+
+                             </ul>
+                        </li>
+
+
+                        <li><a href="javascript:void(0);" onclick="display_menu(this)">脚本监控</a>
+                             <ul style="list-style: none; ">
+                                 <li><a href="{% url 'script_hostinfo' %}">脚本主机</a></li>
+                                 <li><a href="{% url 'select_model'  'Script' %}">脚本列表</a></li>
+                             </ul>
+                        </li>
+
+                      </ul>
+                    </div>
+              {% endblock %}
+
+              {% block right %}
+                   <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                      <h2 class="sub-header">项目列表</h2>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>序号</th>
+                              <th>项目名称</th>
+                              <th>项目备注</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+            {#              {% display_projects query_sets %}#}
+                            <!--
+                            <tr>
+                              <td>1,001</td>
+                              <td>Lorem</td>
+                              <td>ipsum</td>
+
+                            </tr>
+                            <tr>
+                              <td>1,002</td>
+                              <td>amet</td>
+                              <td>consectetur</td>
+
+                            </tr>
+                            <tr>
+                              <td>1,003</td>
+                              <td>Integer</td>
+                              <td>nec</td>
+
+                            </tr>
+                            -->
+                          </tbody>
+                        </table>
+                      </div>
+
+                      <nav>
+                          <ul class="pagination">
+                              {% if query_sets.has_previous %}
+                                    <li class=""><a href="?page={{ query_sets.previous_page_number }}">上页</a></li>
+                              {% endif %}
+{#                              {% build_paginators query_sets %}#}
+                              {% if query_sets.has_next %}
+                                    <li class=""><a href="?page={{ query_sets.next_page_number }}">下页</a></li>
+                              {% endif %}
+                          </ul>
+                      </nav>
+                   </div>
+              {% endblock %}
+      </div>
+    </div>
+
+    <script>
+        function display_menu(self) {
+            var menu = [];
+            var child = self.parentNode.children; //只包括子节点，不包括子节点的后代
+            //alert(child.length);
+            for (var i=0, count=child.length; i<count; i++){
+                if (child[i] !== self){ //排除掉自己
+
+                    if (child[i].style.display === 'none'){
+                        child[i].style.display = 'block';
+                    }
+                    else{
+                        child[i].style.display = 'none';
+                    }
+
+                }
+            }
+        }
+    </script>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+
+<br><br><br>
+
+<div class="panel panel-default" style="width:70%;margin:auto;">
+  <div class="panel-heading" style="background-color: #428bca;text-align: center;margin:auto;height: 50px;">
+    <h3 class="panel-title" style="line-height: 30px;font-size: 25px;">修改主机{{ host.ip }}备注</h3>
+  </div>
+  <div class="panel-body" style=" width:70%;text-align: center;margin-left: 100px;font-size: 18px;">
+      <form method="post">
+          {% csrf_token %}
+
+          <label style="width:200px;">备注</label><input name="note"  style="width: 600px;height: 50px;" value="{{ host.note }}">
+          <br/><br/>
+       <input type="submit" class="btn btn-danger" value="保存">
+
+        <a style="margin-left: 50px;" class="btn btn-info" href="{% url 'hostlist'   %}">取消</a>
+      </form>
+
+  </div>
+</div>
+
+{% endblock %}
